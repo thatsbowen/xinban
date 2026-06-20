@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <radialGradient id="bg" cx="35%" cy="30%">
+      <stop offset="0%" stop-color="#FFB3C6"/>
+      <stop offset="100%" stop-color="#C084FC"/>
+    </radialGradient>
+    <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B9D"/>
+      <stop offset="100%" stop-color="#A855F7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 背景圆角矩形 -->
+  <rect x="64" y="64" width="896" height="896" rx="224" ry="224" fill="url(#bg)"/>
+
+  <!-- 心形 -->
+  <path d="M512 830 C290 660 130 490 130 350 C130 240 220 180 310 180 C390 180 450 220 512 300 C574 220 634 180 714 180 C804 180 894 240 894 350 C894 490 734 660 512 830Z"
+        fill="rgba(255,255,255,0.92)"/>
+
+  <!-- 人物剪影（头） -->
+  <circle cx="512" cy="360" r="90" fill="url(#heartGrad)" opacity="0.85"/>
+
+  <!-- 人物剪影（身体） -->
+  <path d="M370 650 C370 520 410 460 512 460 C614 460 654 520 654 650Z"
+        fill="url(#heartGrad)" opacity="0.85"/>
+</svg>

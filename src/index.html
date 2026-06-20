@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' file:; script-src 'self' 'unsafe-inline'; connect-src https://api.minimaxi.com; img-src 'self' file: data: https:;">
+<title>心伴</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ==================== 初始化页面 ==================== -->
+<div id="page-init" class="page active">
+  <div class="init-card">
+    <div class="logo-icon">💝</div>
+    <h1>创建你的虚拟伙伴</h1>
+    <p class="subtitle">收集一些非敏感信息，帮助我们为你定制专属的陪护角色。<br>所有信息仅用于个性化你的虚拟伙伴。</p>
+
+    <div class="form-group">
+      <label>姓名</label>
+      <input type="text" id="field-name" placeholder="你给我起个名字吧" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>性别</label>
+      <input type="text" id="field-gender" placeholder="你喜欢我是男孩还是女孩呢" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>年龄</label>
+      <input type="text" id="field-age" placeholder="你希望我多大呢" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>性格</label>
+      <input type="text" id="field-personality" placeholder="你希望我是一个什么性格的人物呢" autocomplete="off">
+    </div>
+
+    <button class="btn btn-primary btn-full" id="btn-next" disabled>下一步 · 配置模型</button>
+  </div>
+</div>
+
+<!-- ==================== 配置页面 ==================== -->
+<div id="page-config" class="page">
+  <div class="config-card">
+    <h1>配置大模型</h1>
+    <p class="subtitle">绑定 MiniMax 开放平台 API Key，激活虚拟伙伴的「大脑」</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>注册 MiniMax 开放平台</h4>
+          <p>前往 <a href="#" onclick="require('electron').shell.openExternal('https://platform.minimaxi.com')">platform.minimaxi.com</a> 完成注册并登录。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>充值体验金（10元）</h4>
+          <p>在平台「账户中心 → 充值」页面完成 10 元体验金充值。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>获取 API Key 并绑定</h4>
+          <p>在平台「账户中心 → API Keys」创建 Key，粘贴到下方：</p>
+          <div class="api-key-row">
+            <input type="password" id="apikey-input" placeholder="粘贴你的 MiniMax API Key">
+            <button class="btn btn-outline btn-sm" id="btn-verify">验证</button>
+          </div>
+          <div class="api-status" id="api-status"></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>初始化虚拟伙伴</h4>
+          <p>验证通过后，系统将自动构建角色记忆并生成虚拟人形象。</p>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-full" id="btn-init" style="display:none;">验证并初始化</button>
+    <div class="init-progress" id="init-progress" style="display:none;">
+      <div class="spinner"></div>
+      <div class="progress-text" id="progress-text">正在初始化...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 主界面 ==================== -->
+<div id="page-main" class="page" style="position:relative;">
+  <!-- 左：虚拟人 -->
+  <div class="main-left">
+    <div class="avatar-display" id="avatar-display">
+      <div class="avatar-placeholder" id="avatar-placeholder">
+        <span class="ph-icon">🎀</span>
+        <span class="ph-text">虚拟人形象</span>
+        <span class="ph-text">完成初始化后自动生成</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右：对话 -->
+  <div class="main-right">
+    <div class="chat-header">
+      <div class="chat-avatar">
+        <img id="chat-avatar-img" style="display:none;" />
+        <span id="chat-avatar-text">心</span>
+      </div>
+      <div class="chat-header-info">
+        <div class="chat-name" id="chat-name">虚拟伙伴</div>
+        <div class="chat-status">在线 · 陪伴中</div>
+      </div>
+    </div>
+
+    <div class="chat-body" id="chat-body">
+      <!-- 动态填充 -->
+    </div>
+
+    <div class="chat-input-area">
+      <input type="text" id="chat-input" placeholder="说点什么吧...">
+      <button class="btn-send" id="btn-send">→</button>
+    </div>
+  </div>
+
+  <button class="donate-fab" id="donate-fab">赞赏</button>
+</div>
+
+<!-- ==================== 打赏弹窗 ==================== -->
+<div class="modal-overlay" id="donate-overlay">
+  <div class="donate-modal">
+    <h2>支持开发者</h2>
+    <p class="subtitle">如果这个小家伙给你带来了温暖<br>不妨请开发者喝杯咖啡吧</p>
+
+    <div class="qr-box">
+      <img id="qr-img" style="display:none;" />
+      <div id="qr-placeholder" class="qr-placeholder-icon">
+        <div style="font-size:40px;opacity:0.3;">📷</div>
+        <div>收款二维码</div>
+        <div style="font-size:10px;color:#bbb;">首次使用请在设置中导入</div>
+      </div>
+    </div>
+
+    <div class="amount-row">
+      <button class="amount-tag">￥5</button>
+      <button class="amount-tag active">￥10</button>
+      <button class="amount-tag">￥20</button>
+      <button class="amount-tag">￥50</button>
+      <button class="amount-tag">自定义</button>
+    </div>
+
+    <div class="donate-footer-text">觉得还不错就打赏一下开发者吧</div>
+    <button class="donate-close" id="donate-close">关闭</button>
+  </div>
+</div>
+
+<script src="renderer.js"></script>
+</body>
+</html>

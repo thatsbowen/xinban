@@ -1,0 +1,79 @@
+{
+  "name": "virtual-companion",
+  "version": "1.0.0",
+  "description": "虚拟人情感陪护桌面应用",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "generate-icons": "node scripts/generate-icons.js",
+    "build:win:setup": "electron-builder --win nsis",
+    "build:win:portable": "electron-builder --win portable",
+    "build:win": "npm run build:win:setup && npm run build:win:portable",
+    "build:mac": "electron-builder --mac",
+    "build:all": "npm run build:win && npm run build:mac"
+  },
+  "build": {
+    "appId": "com.virtualcompanion.app",
+    "productName": "心伴",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "assets/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "assets/qrcode.jpg",
+        "to": "assets/qrcode.jpg"
+      }
+    ],
+    "win": {
+      "icon": "assets/icon.png",
+      "sign": null,
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "心伴",
+      "installerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "${productName}-Portable-${version}.${ext}"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.icns",
+      "artifactName": "${productName}-${version}-macOS.${ext}",
+      "category": "public.app-category.social-networking"
+    },
+    "dmg": {
+      "title": "${productName} Installer",
+      "artifactName": "${productName}-${version}-macOS.${ext}"
+    }
+  },
+  "dependencies": {
+    "sharp": "^0.33.0"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.0",
+    "png-to-ico": "^2.1.8"
+  }
+}
